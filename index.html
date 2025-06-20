@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-Day Interactive Java E-Book</title>
+    <!-- Chosen Palette: Warm Neutral (Background: #FDFBF7, Text: #3D2B1F, Primary Accent: #D97706, Secondary Accent: #3B82F6) -->
+    <!-- Application Structure Plan: A single-page application (SPA) designed as a 10-day interactive e-book on Java. The structure uses a fixed sidebar for navigation (collapsible on mobile), allowing users to jump to any "Day." The main content area dynamically displays the content for the selected day. This structure was chosen because it provides a clear, linear learning path (Day 1 to 10) typical of a course or book, while the SPA and sidebar navigation offer the flexibility for users to revisit topics easily without page reloads, enhancing the learning experience. Each "Day" is a self-contained module with text, code examples, and interactive visualizations. -->
+    <!-- Visualization & Content Choices: The report content (Java learning materials) is structured into a 10-day curriculum. Goal: Teach core Java concepts. Method: Each concept is presented with simple explanations, code examples with a copy feature, and comparison tables. Interactions: Interactive charts are used to visualize complex relationships and trade-offs. Justification: This multi-faceted approach caters to different learning styles. Text explains the 'what' and 'why,' code provides practical examples, and visualizations make abstract concepts (like data structure performance) concrete. Viz Choices: Day 6 (Inheritance): An HTML/CSS diagram to show class relationships. Goal: Organize. Day 7 (Polymorphism): A Chart.js bar chart to compare Overloading vs. Overriding features. Goal: Compare. Day 10 (Collections): Chart.js bar charts to compare performance trade-offs of ArrayList/LinkedList and HashSet/TreeSet. Goal: Compare. Library/Method: HTML/CSS for static diagrams, Chart.js for dynamic charts. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #3D2B1F;
+        }
+        pre {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .prose-custom h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #3D2B1F;
+            border-bottom: 2px solid #D97706;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-custom h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #3D2B1F;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .prose-custom p {
+            line-height: 1.75;
+            margin-bottom: 1rem;
+        }
+        .prose-custom ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .prose-custom code {
+            color: #D97706;
+            font-weight: 500;
+            background-color: rgba(217, 122, 6, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+        .prose-custom pre code {
+            color: inherit;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 1em;
+        }
+        .prose-custom strong {
+            color: #3D2B1F;
+            font-weight: 600;
+        }
+        .prose-custom table {
+            width: 100%;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-collapse: collapse;
+        }
+        .prose-custom th, .prose-custom td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .prose-custom th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        #mobile-menu-button {
+            display: none;
+        }
+        @media (max-width: 1024px) {
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #mobile-menu-button {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF7]">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white text-[#3D2B1F] w-64 min-h-screen p-6 shadow-lg fixed lg:relative z-20">
+            <h1 class="text-2xl font-bold text-[#D97706] mb-8">Java E-Book</h1>
+            <nav id="navigation" class="space-y-2">
+                <!-- Navigation links will be inserted here by JS -->
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+            <button id="mobile-menu-button" class="lg:hidden fixed top-4 left-4 z-30 p-2 bg-white rounded-md shadow-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div id="content-area" class="prose-custom max-w-none">
+                <!-- Content for each day will be inserted here by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const content = {
+            "day-1": {
+                title: "Day 1: Your First Steps in Programming",
+                content: `
+                    <h2>Welcome to the World of Software</h2>
+                    <p>At its core, a computer is a powerful but literal machine that does exactly what it is told. The instructions we give it are called <strong>software</strong>. In essence, software is a collection of programs, commands, and data that tells a computer how to perform specific tasks. Software can be broadly divided into two main categories: System Software and Application Software.</p>
+                    <h3>System Software vs. Application Software</h3>
+                    <p><strong>System Software</strong> is the foundational layer that manages the computer's hardware. Think of it as the 'stage crew' working behind the scenes. Examples include your Operating System (like Windows or macOS) and device drivers.</p>
+                    <p><strong>Application Software</strong> is designed for the end-user. These are the programs we interact with daily, like a web browser or a word processor. They are the 'actors' on the stage.</p>
+                    
+                    <h3>Procedural vs. Object-Oriented Programming</h3>
+                    <p><strong>Procedural Programming (PP)</strong> organizes code like a recipe: a linear, step-by-step set of instructions. It's simple for small tasks but can get messy as programs grow.</p>
+                    <p><strong>Object-Oriented Programming (OOP)</strong>, which Java uses, thinks of a program as a collection of interacting 'objects'. Each object is a self-contained bundle of data and the functions that operate on that data. This models the real world, making code more modular, secure, and reusable.</p>
+
+                    <h3>Why Choose Java? Platform Independence</h3>
+                    <p>Java's philosophy is <strong>"Write Once, Run Anywhere" (WORA)</strong>. Unlike other languages that compile code for a specific machine, Java compiles code into an intermediate format called <strong>Java bytecode</strong>. This bytecode is universal and not tied to any single computer type.</p>
+
+                    <h3>The Magic Behind Java: JDK, JRE, and JVM</h3>
+                    <p>This "run anywhere" promise is fulfilled by three core components:</p>
+                    <ul>
+                        <li><strong>Java Virtual Machine (JVM):</strong> The engine that runs your code. It takes the universal bytecode and translates it into the native language your specific computer understands.</li>
+                        <li><strong>Java Runtime Environment (JRE):</strong> The 'user kit'. It includes the JVM and everything else needed to <em>run</em> a Java application.</li>
+                        <li><strong>Java Development Kit (JDK):</strong> The 'developer kit'. It includes the JRE plus tools (like the compiler) needed to <em>write</em> and compile Java programs.</li>
+                    </ul>
+                    <div class="my-8 p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
+                        <h4 class="font-semibold text-lg mb-2">The Java Workflow</h4>
+                        <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                            <div class="p-3 bg-white rounded shadow">Your Code (.java)</div>
+                            <div class="text-2xl font-bold text-amber-600">&rarr;</div>
+                            <div class="p-3 bg-white rounded shadow">Compiler (JDK)</div>
+                             <div class="text-2xl font-bold text-amber-600">&rarr;</div>
+                            <div class="p-3 bg-white rounded shadow">Bytecode (.class)</div>
+                             <div class="text-2xl font-bold text-amber-600">&rarr;</div>
+                            <div class="p-3 bg-white rounded shadow">JVM (JRE)</div>
+                             <div class="text-2xl font-bold text-amber-600">&rarr;</div>
+                            <div class="p-3 bg-white rounded shadow">Machine Code</div>
+                        </div>
+                    </div>
+
+                    <h3>Your First Java Program: "Hello, World!"</h3>
+                    <p>It's a tradition to start by making the computer say "Hello, World!". This confirms your setup is working and introduces the basic structure of a Java program.</p>
+                    <div class="code-block" data-code='public class MyFirstProgram {\n    public static void main(String[] args) {\n        // This line prints the text to the console\n        System.out.println("Hello, World!");\n    }\n}'></div>
+                `
+            },
+            "day-2": {
+                title: "Day 2: The Building Blocks of Java",
+                content: `
+                    <h2>Storing Information: Variables</h2>
+                    <p>A <strong>variable</strong> is a named container in memory that holds a piece of data. In Java, a 'strongly typed' language, you must declare the type of data a variable will hold before using it.</p>
+                    <div class="code-block" data-code='// Declaration\nint score;\n\n// Initialization\nscore = 100;\n\n// Declaration and Initialization\nString playerName = "Alex";'></div>
+
+                    <h2>Java's Fundamental Data Types: The Primitives</h2>
+                    <p>Java has eight <strong>primitive</strong> data types, the most basic building blocks for data. They are lightweight and fast, making them ideal for simple, frequent operations.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>int</code></td><td>Whole numbers (most common).</td><td><code>int score = 100;</code></td></tr>
+                            <tr><td><code>double</code></td><td>Decimal numbers (default for fractions).</td><td><code>double price = 19.99;</code></td></tr>
+                            <tr><td><code>boolean</code></td><td>Logical value of either <code>true</code> or <code>false</code>.</td><td><code>boolean isActive = true;</code></td></tr>
+                            <tr><td><code>char</code></td><td>A single character.</td><td><code>char grade = 'A';</code></td></tr>
+                            <tr><td><code>byte</code></td><td>Very small integers (-128 to 127).</td><td><code>byte b = 10;</code></td></tr>
+                             <tr><td><code>short</code></td><td>Small integers (-32,768 to 32,767).</td><td><code>short s = 30000;</code></td></tr>
+                              <tr><td><code>long</code></td><td>Very large integers.</td><td><code>long population = 7000000000L;</code></td></tr>
+                               <tr><td><code>float</code></td><td>Single-precision decimal numbers.</td><td><code>float temp = 98.6F;</code></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h2>Making Things Happen: Operators</h2>
+                    <p><strong>Operators</strong> are special symbols that perform operations on variables and values.</p>
+                    <h3>Arithmetic Operators</h3>
+                    <p>Used for math: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and <code>%</code> (modulus/remainder).</p>
+                    <div class="code-block" data-code='int a = 10;\nint b = 3;\nSystem.out.println(a % b); // Output: 1'></div>
+                    
+                    <h3>Relational Operators</h3>
+                    <p>Used for comparison, resulting in a <code>boolean</code>: <code>==</code>, <code>!=</code>, <code>></code>, <code><</code>, <code>>=</code>, <code><=</code>.</p>
+                    <div class="code-block" data-code='int score = 95;\nSystem.out.println(score >= 90); // Output: true'></div>
+                    
+                    <h3>Logical Operators</h3>
+                    <p>Used to combine boolean expressions: <code>&&</code> (AND), <code>||</code> (OR), <code>!</code> (NOT).</p>
+                    <div class="code-block" data-code='boolean hasKey = true;\nboolean doorIsLocked = true;\nSystem.out.println(hasKey && doorIsLocked); // Output: true'></div>
+                    
+                    <h2>Unchanging Values: Constants</h2>
+                    <p>A constant is a variable whose value cannot be changed after it's set. You create one using the <code>final</code> keyword. By convention, constant names are in all uppercase.</p>
+                    <div class="code-block" data-code='final double PI = 3.14159;\n// PI = 4; // This would cause a compile error'></div>
+                `
+            },
+            "day-3": {
+                title: "Day 3: Controlling Program Flow",
+                content: `
+                    <h2>Making Decisions: The if-else Statement</h2>
+                    <p>The <code>if</code> statement is the most fundamental decision-making tool. It executes a block of code only if a certain condition is <code>true</code>. You can provide an alternative path with <code>else</code> and chain multiple conditions with <code>else if</code>.</p>
+                    <div class="code-block" data-code='int score = 85;\n\nif (score >= 90) {\n    System.out.println("Grade: A");\n} else if (score >= 80) {\n    System.out.println("Grade: B"); // This block runs\n} else {\n    System.out.println("Grade: C or below");\n}'></div>
+                    
+                    <h2>Choosing from Many Options: The switch Statement</h2>
+                    <p>When you need to check a single variable against a list of specific values, the <code>switch</code> statement is a cleaner alternative to a long <code>if-else-if</code> ladder. Remember to use <code>break</code> to prevent execution from "falling through" to the next case.</p>
+                    <div class="code-block" data-code='char grade = 'B';\n\nswitch (grade) {\n    case 'A':\n        System.out.println("Excellent!");\n        break;\n    case 'B':\n        System.out.println("Good job!"); // This block runs\n        break;\n    case 'C':\n        System.out.println("You passed.");\n        break;\n    default:\n        System.out.println("Invalid grade.");\n        break;\n}'></div>
+                    
+                    <h2>Repeating Actions: Loops</h2>
+                    <p>Loops are used to execute a block of code repeatedly. Choosing the right loop depends on whether you know the number of iterations beforehand.</p>
+                    
+                    <h3>The 'for' loop</h3>
+                    <p>Ideal when you know exactly how many times you want to loop.</p>
+                    <div class="code-block" data-code='// Prints numbers 1 through 5\nfor (int i = 1; i <= 5; i++) {\n    System.out.println(i);\n}'></div>
+                    
+                    <h3>The 'while' loop</h3>
+                    <p>Use when you want to loop as long as a condition is true, but you don't know how many iterations it will take.</p>
+                    <div class="code-block" data-code='int count = 1;\nwhile (count <= 5) {\n    System.out.println(count);\n    count++;\n}'></div>
+                    
+                    <h3>The 'do-while' loop</h3>
+                    <p>Similar to a <code>while</code> loop, but it guarantees the loop body will execute at least once, as the condition is checked <em>after</em> the iteration.</p>
+                    <div class="code-block" data-code='int num = 1;\ndo {\n    System.out.println("This will print at least once.");\n} while (num < 1); // Condition is false, but loop ran once'></div>
+                    
+                    <h2>Altering Loop Behavior: break and continue</h2>
+                    <ul>
+                        <li><strong>break:</strong> Immediately terminates the loop.</li>
+                        <li><strong>continue:</strong> Skips the current iteration and proceeds to the next one.</li>
+                    </ul>
+                    <div class="code-block" data-code='for (int i = 1; i <= 10; i++) {\n    if (i == 5) {\n        continue; // Skip printing 5\n    }\n    if (i == 8) {\n        break; // Stop the loop at 8\n    }\n    System.out.print(i + " "); // Output: 1 2 3 4 6 7\n}'></div>
+                `
+            },
+            "day-4": {
+                title: "Day 4: The Heart of OOP - Classes & Objects",
+                content: `
+                    <h2>A New Way of Thinking: From Procedures to Objects</h2>
+                    <p>Object-Oriented Programming (OOP) shifts our thinking from linear recipes to building programs out of smart, self-contained components called <strong>objects</strong>. An object bundles its own data (<strong>state</strong>) and the functions that operate on that data (<strong>behavior</strong>).</p>
+                    
+                    <h2>The Blueprint: Defining a Class</h2>
+                    <p>If an object is the actual "thing," a <strong>class</strong> is the blueprint or template used to create it. A class defines what fields (state) and methods (behavior) all objects of that type will have.</p>
+                    <ul>
+                        <li><strong>Instance Variables (Fields):</strong> Variables inside a class that represent the state of an individual object.</li>
+                        <li><strong>Methods:</strong> Functions inside a class that define the object's behavior.</li>
+                    </ul>
+                    <div class="code-block" data-code='public class Dog {\n    // Instance Variables (State)\n    String breed;\n    int age;\n\n    // Method (Behavior)\n    void bark() {\n        System.out.println("Woof!");\n    }\n}'></div>
+                    
+                    <h2>Bringing Blueprints to Life: Creating Objects</h2>
+                    <p>Creating an object from a class is called <strong>instantiation</strong>. This process brings the blueprint to life, creating a unique instance in memory using the <code>new</code> keyword. You can then interact with the object using the dot (<code>.</code>) operator.</p>
+                    <div class="code-block" data-code='public class DogPark {\n    public static void main(String[] args) {\n        // Create a Dog object\n        Dog myDog = new Dog();\n\n        // Set its state\n        myDog.breed = "Golden Retriever";\n        myDog.age = 3;\n\n        // Access its state\n        System.out.println("My dog is a " + myDog.age + "-year-old " + myDog.breed + ".");\n\n        // Call its methods\n        myDog.bark();\n    }\n}'></div>
+                    
+                    <h3>Practical Workshop: Building a 'Car' Class</h3>
+                    <p>Let's create a <code>Car</code> class with state (model, speed) and behavior (accelerate, brake).</p>
+                    <div class="code-block" data-code='public class Car {\n    String model;\n    double speed;\n\n    void accelerate() {\n        speed += 10;\n        System.out.println(model + " is accelerating to " + speed + " km/h");\n    }\n\n    void brake() {\n        speed -= 5;\n        System.out.println(model + " is braking to " + speed + " km/h");\n    }\n}\n\n// To test it:\nCar myCar = new Car();\nmyCar.model = "Tesla Model 3";\nmyCar.speed = 60;\nmyCar.accelerate(); // Tesla Model 3 is accelerating to 70.0 km/h'></div>
+                `
+            },
+            "day-5": {
+                title: "Day 5: Object Initialization and Self-Reference",
+                content: `
+                    <h2>The Birth of an Object: Constructors</h2>
+                    <p>A <strong>constructor</strong> is a special method that is automatically called when an object is created with the <code>new</code> keyword. Its job is to initialize the new object's state. Constructors must have the same name as the class and have no return type.</p>
+                    
+                    <h3>Default Constructor</h3>
+                    <p>If you don't provide a constructor, Java creates one for you. It's empty and takes no arguments.</p>
+                    
+                    <h3>Parameterized Constructor</h3>
+                    <p>This is the most common type. It accepts parameters, allowing you to create and initialize an object in one step.</p>
+                    <div class="code-block" data-code='class Student {\n    int id;\n    String name;\n\n    // Parameterized constructor\n    Student(int studentId, String studentName) {\n        id = studentId;\n        name = studentName;\n    }\n\n    void display() {\n        System.out.println("ID: " + id + ", Name: " + name);\n    }\n}\n\n// Usage\nStudent s1 = new Student(111, "Karan");\ns1.display(); // Output: ID: 111, Name: Karan'></div>
+                    
+                    <h2>Who Am I? The 'this' Keyword</h2>
+                    <p>The <code>this</code> keyword is a reference to the current object—the object whose method or constructor is being called. Its most critical role is to resolve ambiguity between instance variables and parameters that have the same name.</p>
+                    <div class="code-block" data-code='class Student {\n    int id;\n    String name;\n\n    Student(int id, String name) {\n        // "this.id" is the instance variable\n        // "id" is the parameter\n        this.id = id;\n        this.name = name;\n    }\n    \n    void display() {\n        System.out.println(this.id + " " + this.name);\n    }\n}\n\nStudent s1 = new Student(111, "Ankit");\ns1.display(); // Output: 111 Ankit'></div>
+
+                    <h3>Using 'this' for Constructor Chaining</h3>
+                    <p>You can use <code>this()</code> to call one constructor from another in the same class. This helps reduce code duplication.</p>
+                     <div class="code-block" data-code='class Box {\n    double width, height, depth;\n\n    // Main constructor\n    Box(double w, double h, double d) {\n        this.width = w;\n        this.height = h;\n        this.depth = d;\n    }\n\n    // Constructor for a cube, calls the main constructor\n    Box(double len) {\n        this(len, len, len); // Calls the other constructor\n    }\n}'></div>
+                `
+            },
+            "day-6": {
+                title: "Day 6: Inheritance - Building on Existing Code",
+                content: `
+                    <h2>The Principle of Inheritance: The "IS-A" Relationship</h2>
+                    <p><strong>Inheritance</strong> is a core OOP pillar that allows a new class (<strong>subclass</strong> or child) to be based on an existing class (<strong>superclass</strong> or parent). The subclass inherits the fields and methods of the superclass, forming an "IS-A" relationship (e.g., a <code>Dog</code> IS-A <code>Animal</code>). We use the <code>extends</code> keyword for this.</p>
+                    
+                    <h3>Types of Inheritance in Java</h3>
+                    <p>Inheritance models real-world relationships. Java supports several types, but we'll focus on the main ones.</p>
+                    
+                    <div class="my-8 p-6 bg-white rounded-lg shadow-md">
+                        <h4 class="text-xl font-semibold mb-4 text-center">Inheritance Structures</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                            <!-- Single Inheritance -->
+                            <div>
+                                <h5 class="font-semibold mb-2">Single Inheritance</h5>
+                                <div class="p-4 bg-blue-100 border border-blue-300 rounded-lg">Animal</div>
+                                <div class="h-8 w-px bg-gray-400 mx-auto"></div>
+                                <div class="p-4 bg-green-100 border border-green-300 rounded-lg">Dog</div>
+                                <p class="text-sm mt-2 text-gray-600">One child inherits from one parent.</p>
+                            </div>
+                            <!-- Multilevel Inheritance -->
+                            <div>
+                                <h5 class="font-semibold mb-2">Multilevel Inheritance</h5>
+                                <div class="p-4 bg-blue-100 border border-blue-300 rounded-lg">Animal</div>
+                                <div class="h-8 w-px bg-gray-400 mx-auto"></div>
+                                <div class="p-4 bg-green-100 border border-green-300 rounded-lg">Dog</div>
+                                <div class="h-8 w-px bg-gray-400 mx-auto"></div>
+                                <div class="p-4 bg-yellow-100 border border-yellow-300 rounded-lg">BabyDog</div>
+                                <p class="text-sm mt-2 text-gray-600">A chain of inheritance.</p>
+                            </div>
+                            <!-- Hierarchical Inheritance -->
+                            <div>
+                                <h5 class="font-semibold mb-2">Hierarchical Inheritance</h5>
+                                <div class="p-4 bg-blue-100 border border-blue-300 rounded-lg">Animal</div>
+                                <div class="flex justify-center">
+                                    <div class="w-1/3 h-8 border-l border-b border-gray-400"></div>
+                                    <div class="w-1/3 h-8 border-b border-gray-400"></div>
+                                    <div class="w-1/3 h-8 border-r border-b border-gray-400"></div>
+                                </div>
+                                <div class="flex justify-around">
+                                    <div class="w-1/3 h-8 border-r border-gray-400"></div>
+                                    <div class="w-1/3"></div>
+                                    <div class="w-1/3 h-8 border-l border-gray-400"></div>
+                                </div>
+                                <div class="flex justify-around">
+                                    <div class="p-2 bg-green-100 border border-green-300 rounded-lg">Dog</div>
+                                    <div class="p-2 bg-purple-100 border border-purple-300 rounded-lg">Cat</div>
+                                    <div class="p-2 bg-orange-100 border border-orange-300 rounded-lg">Cow</div>
+                                </div>
+                                <p class="text-sm mt-2 text-gray-600">One parent has multiple children.</p>
+                            </div>
+                        </div>
+                         <p class="mt-6 text-center text-gray-600"><strong>Note:</strong> Java does not support multiple inheritance (a class extending more than one class) to avoid complexity. This is solved using Interfaces (Day 8).</p>
+                    </div>
+
+                    <div class="code-block" data-code='// Superclass\nclass Animal {\n    void eat() {\n        System.out.println("This animal eats food.");\n    }\n}\n\n// Subclass\nclass Dog extends Animal {\n    void bark() {\n        System.out.println("The dog barks.");\n    }\n}\n\n// Usage\nDog d = new Dog();\nd.bark(); // Method from Dog class\nd.eat();  // Method inherited from Animal class'></div>
+                    
+                    <h2>Communicating with the Parent: The 'super' Keyword</h2>
+                    <p>The <code>super</code> keyword is a reference to the immediate parent class object. It's used to call the parent's methods or constructors, especially when the child has overridden them.</p>
+                    <div class="code-block" data-code='class Animal {\n    void eat() {\n        System.out.println("eating...");\n    }\n}\n\nclass Dog extends Animal {\n    // This method overrides the parent method\n    void eat() {\n        System.out.println("eating bread...");\n    }\n\n    void work() {\n        super.eat(); // Calls the Animal\'s eat() method\n        this.eat();  // Calls the Dog\'s eat() method\n    }\n}\n\nDog d = new Dog();\nd.work();\n// Output:\n// eating...\n// eating bread...'></div>
+                `
+            },
+            "day-7": {
+                title: "Day 7: Polymorphism - One Interface, Many Implementations",
+                content: `
+                    <h2>What is Polymorphism? Many Forms</h2>
+                    <p><strong>Polymorphism</strong>, meaning "many forms," is an OOP concept that allows us to perform a single action in different ways. It's the ability of an object to take on many forms. For example, a <code>Shape</code> variable could hold a <code>Circle</code> or a <code>Square</code>. When you call the <code>draw()</code> method, the correct version is executed based on the actual object.</p>
+                    
+                    <h3>Compile-Time Polymorphism: Method Overloading</h3>
+                    <p><strong>Method Overloading</strong> is when multiple methods in the same class have the same name but different parameters (either in number or type). The compiler decides which one to call at compile-time.</p>
+                    <div class="code-block" data-code='class Adder {\n    int add(int a, int b) {\n        return a + b;\n    }\n\n    // Overloaded method with different number of parameters\n    int add(int a, int b, int c) {\n        return a + b + c;\n    }\n    \n    // Overloaded method with different types of parameters\n    double add(double a, double b) {\n        return a + b;\n    }\n}'></div>
+                    
+                    <h3>Run-Time Polymorphism: Method Overriding</h3>
+                    <p><strong>Method Overriding</strong> is when a subclass provides its own specific implementation for a method that is already defined in its superclass. The method must have the same name, parameters, and return type.</p>
+                    <div class="code-block" data-code='class Animal {\n    void makeSound() {\n        System.out.println("Animal makes a sound");\n    }\n}\n\nclass Cat extends Animal {\n    // Overriding the parent method\n    @Override\n    void makeSound() {\n        System.out.println("The cat meows");\n    }\n}\n\nAnimal myPet = new Cat(); // Reference is Animal, object is Cat\nmyPet.makeSound(); // Output: The cat meows'></div>
+                    
+                    <h2>Overloading vs. Overriding</h2>
+                    <p>This is a common point of confusion. The chart below clarifies the key differences between these two forms of polymorphism.</p>
+                    <div class="chart-container"><canvas id="polyChart"></canvas></div>
+                `
+            },
+            "day-8": {
+                title: "Day 8: Hiding Complexity & Defining Contracts",
+                content: `
+                    <h2>Encapsulation and Data Hiding</h2>
+                    <p><strong>Encapsulation</strong> is the practice of bundling an object's data (fields) and the methods that operate on that data into a single unit (the class). This is taken a step further with <strong>data hiding</strong>, which means restricting direct access to the internal fields using the <code>private</code> access modifier.</p>
+                    <p>If fields are private, how do we use them? We create public methods called <strong>getters</strong> (to read data) and <strong>setters</strong> (to write data). This allows us to control access and add validation logic, protecting the object from having invalid data.</p>
+                     <div class="code-block" data-code='class Person {\n    private int age; // Private field\n\n    // Getter\n    public int getAge() {\n        return age;\n    }\n\n    // Setter with validation\n    public void setAge(int newAge) {\n        if (newAge >= 0) {\n            this.age = newAge;\n        } else {\n            System.out.println("Age cannot be negative.");\n        }\n    }\n}\n\nPerson p = new Person();\np.setAge(25);\n// p.age = -5; // This would be a compile error\np.setAge(-5); // "Age cannot be negative."'></div>
+                    
+                    <h2>Abstraction: Hiding the "How"</h2>
+                    <p><strong>Abstraction</strong> is about hiding implementation details behind a simple interface. It shows <em>what</em> an object can do, not <em>how</em> it does it. This is achieved using <strong>abstract classes</strong> and <strong>interfaces</strong>.</p>
+                    
+                    <h3>Abstract Classes</h3>
+                    <p>An abstract class cannot be instantiated directly and is meant to be subclassed. It can contain <strong>abstract methods</strong>—methods with no implementation. Any non-abstract subclass <em>must</em> provide an implementation for these methods, enforcing a contract.</p>
+                    <div class="code-block" data-code='abstract class Shape {\n    // Abstract method - no body!\n    abstract void draw();\n\n    void displayInfo() {\n        System.out.println("This is a shape.");\n    }\n}\n\nclass Circle extends Shape {\n    // Must implement the abstract method\n    void draw() {\n        System.out.println("Drawing a circle.");\n    }\n}\n\n// Shape s = new Shape(); // Error! Cannot instantiate.\nShape s = new Circle();\ns.draw(); // Output: Drawing a circle.'></div>
+                    
+                    <h3>Interfaces</h3>
+                    <p>An <strong>interface</strong> is a completely abstract "class" that can only contain abstract methods and constants. It's a pure contract of behavior. A class can <code>implement</code> multiple interfaces, which is how Java achieves a form of multiple inheritance.</p>
+                    <div class="code-block" data-code='interface Drivable {\n    void drive();\n}\n\ninterface Flyable {\n    void fly();\n}\n\n// This class implements two contracts\nclass FlyingCar implements Drivable, Flyable {\n    public void drive() {\n        System.out.println("Driving on the road.");\n    }\n\n    public void fly() {\n        System.out.println("Flying in the air.");\n    }\n}'></div>
+                `
+            },
+            "day-9": {
+                title: "Day 9: Handling Text and Errors",
+                content: `
+                    <h2>Working with Text: The String Class</h2>
+                    <p>In Java, a <strong>String</strong> is an object that represents a sequence of characters. A key property of Java Strings is that they are <strong>immutable</strong>—once a String object is created, it cannot be changed. Any modification actually creates a new String object.</p>
+                    <p>The String class provides many useful methods for manipulating text.</p>
+                    <div class="code-block" data-code='String text = "  Java is Fun!  ";\n\nSystem.out.println(text.length()); // 15\nSystem.out.println(text.toUpperCase()); // "  JAVA IS FUN!  "\nSystem.out.println(text.trim()); // "Java is Fun!"\nSystem.out.println(text.substring(7, 9)); // "is"\nSystem.out.println(text.trim().replace("Fun", "Awesome")); // "Java is Awesome!"'></div>
+
+                    <h2>Handling Problems: Exception Handling</h2>
+                    <p>An <strong>exception</strong> is an error event that occurs during the execution of a program that disrupts its normal flow. Java's exception handling mechanism allows you to gracefully manage these errors instead of letting your program crash.</p>
+                    
+                    <h3>The 'try-catch' Block</h3>
+                    <p>You place code that might cause an exception inside a <code>try</code> block. If an exception occurs, the program jumps to the corresponding <code>catch</code> block to handle it.</p>
+                    <div class="code-block" data-code='try {\n    int[] numbers = {1, 2, 3};\n    System.out.println(numbers[10]); // This will cause an exception\n} catch (ArrayIndexOutOfBoundsException e) {\n    // This block runs because the exception occurred\n    System.out.println("Error: That index does not exist.");\n    System.out.println("Exception details: " + e);\n}\n\nSystem.out.println("The program continues to run!");'></div>
+
+                    <h3>The 'finally' Block</h3>
+                    <p>A <code>finally</code> block contains code that will be executed no matter what—whether an exception occurred or not. This is crucial for cleanup tasks, like closing a file or a network connection.</p>
+                     <div class="code-block" data-code='try {\n    int result = 10 / 0;\n} catch (ArithmeticException e) {\n    System.out.println("Cannot divide by zero!");\n} finally {\n    System.out.println("This finally block always executes.");\n}'></div>
+                     
+                    <h3>The 'throw' and 'throws' Keywords</h3>
+                    <ul>
+                        <li><strong>throw:</strong> Used to manually throw an exception within a method.</li>
+                        <li><strong>throws:</strong> Used in a method signature to declare that the method might throw a particular type of exception, forcing the calling code to handle it.</li>
+                    </ul>
+                     <div class="code-block" data-code='void checkAge(int age) throws ArithmeticException {\n    if (age < 18) {\n        throw new ArithmeticException("Access denied - You must be at least 18 years old.");\n    }\n    else {\n        System.out.println("Access granted.");\n    }\n}\n\n// Calling code must handle it\ntry {\n    checkAge(15);\n} catch (ArithmeticException e) {\n    System.out.println(e.getMessage());\n}'></div>
+                `
+            },
+            "day-10": {
+                title: "Day 10: The Collections Framework",
+                content: `
+                    <h2>The Bridge: Wrapper Classes</h2>
+                    <p>The Java <strong>Collection Framework</strong>, which we'll explore next, can only store objects, not primitive types. So how do we store an <code>int</code> in a list? The solution is <strong>Wrapper Classes</strong>. For each primitive type, Java has a corresponding class that "wraps" the value in an object (e.g., <code>int</code> has <code>Integer</code>, <code>double</code> has <code>Double</code>).</p>
+                    <p>Java makes this easy with <strong>autoboxing</strong> (primitive to object) and <strong>unboxing</strong> (object to primitive), which happen automatically.</p>
+                    <div class="code-block" data-code='Integer intObject = 100; // Autoboxing (int to Integer)\nint primitiveInt = intObject; // Unboxing (Integer to int)'></div>
+
+                    <h2>Managing Groups of Objects: The Collection Framework</h2>
+                    <p>The Collection Framework provides a set of interfaces and classes for storing and manipulating groups of objects. The two most fundamental types of collections are Lists and Sets.</p>
+                    
+                    <h3>Ordered Collections: The 'List' Interface</h3>
+                    <p>A <code>List</code> is an ordered collection (a sequence) that allows duplicate elements. You can access elements by their index. The two most common implementations are <code>ArrayList</code> and <code>LinkedList</code>.</p>
+                    <ul>
+                        <li><strong>ArrayList:</strong> Backed by a dynamic array. Very fast for getting elements by index. Slower for adding/removing from the middle.</li>
+                        <li><strong>LinkedList:</strong> Backed by nodes with pointers. Slower for getting elements by index, but much faster for adding/removing elements.</li>
+                    </ul>
+                    <div class="chart-container"><canvas id="listChart"></canvas></div>
+                    <div class="code-block" data-code='import java.util.ArrayList;\nimport java.util.List;\n\nList<String> fruits = new ArrayList<>();\nfruits.add("Apple");\nfruits.add("Banana");\nfruits.add("Apple"); // Duplicates are allowed\nSystem.out.println(fruits.get(1)); // Output: Banana'></div>
+
+                    <h3>Unique Collections: The 'Set' Interface</h3>
+                    <p>A <code>Set</code> is a collection that contains no duplicate elements. If you try to add an element that is already present, the operation is ignored. They are generally unordered.</p>
+                     <ul>
+                        <li><strong>HashSet:</strong> Offers the best performance but makes no guarantees about the iteration order. Use this most of the time.</li>
+                        <li><strong>TreeSet:</strong> Keeps elements sorted in their natural order (e.g., alphabetical, numerical). Slower than HashSet.</li>
+                    </ul>
+                    <div class="chart-container mt-8"><canvas id="setChart"></canvas></div>
+                    <div class="code-block" data-code='import java.util.HashSet;\nimport java.util.Set;\n\nSet<String> uniqueNames = new HashSet<>();\nuniqueNames.add("Alice");\nuniqueNames.add("Bob");\nuniqueNames.add("Alice"); // This duplicate is ignored\nSystem.out.println(uniqueNames); // [Bob, Alice] (order not guaranteed)'></div>
+                `
+            }
+        };
+
+        const navigation = document.getElementById('navigation');
+        const contentArea = document.getElementById('content-area');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+
+        let activeDay = 'day-1';
+
+        function renderNav() {
+            navigation.innerHTML = '';
+            for (const dayId in content) {
+                const day = content[dayId];
+                const link = document.createElement('a');
+                link.href = `#${dayId}`;
+                link.textContent = day.title;
+                link.dataset.day = dayId;
+                link.className = `block px-4 py-2 rounded-md transition-colors duration-200 ${
+                    dayId === activeDay ? 'bg-amber-100 text-amber-800 font-semibold' : 'hover:bg-amber-50'
+                }`;
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activeDay = dayId;
+                    render();
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+                navigation.appendChild(link);
+            }
+        }
+        
+        function renderContent() {
+            const dayData = content[activeDay];
+            contentArea.innerHTML = `<h1 class="text-4xl font-bold mb-4">${dayData.title}</h1>${dayData.content}`;
+            document.documentElement.scrollTop = 0;
+            renderCodeBlocks();
+            renderCharts();
+        }
+
+        function renderCodeBlocks() {
+            document.querySelectorAll('.code-block').forEach(block => {
+                const code = block.dataset.code;
+                const container = document.createElement('div');
+                container.className = 'relative my-6';
+
+                const pre = document.createElement('pre');
+                pre.className = 'bg-[#3D2B1F] text-white p-4 rounded-lg overflow-x-auto text-sm';
+                
+                const codeEl = document.createElement('code');
+                codeEl.textContent = code;
+                pre.appendChild(codeEl);
+                
+                const button = document.createElement('button');
+                button.textContent = 'Copy';
+                button.className = 'absolute top-2 right-2 bg-gray-600 hover:bg-gray-500 text-white text-xs font-semibold py-1 px-2 rounded-md transition-colors';
+                button.onclick = () => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    button.textContent = 'Copied!';
+                    setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+                };
+                
+                container.appendChild(pre);
+                container.appendChild(button);
+                block.replaceWith(container);
+            });
+        }
+
+        function renderCharts() {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#3D2B1F';
+
+            const polyCanvas = document.getElementById('polyChart');
+            if (polyCanvas) {
+                new Chart(polyCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Polymorphism Type', 'Purpose', 'Location', 'Inheritance', 'Method Signature', 'Binding'],
+                        datasets: [{
+                            label: 'Method Overloading',
+                            data: [1, 2, 1, 0, 0, 1],
+                            backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Method Overriding',
+                            data: [2, 3, 2, 1, 1, 2],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Method Overloading vs. Overriding', font: { size: 18 } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const feature = context.label;
+                                        const type = context.dataset.label;
+                                        const valueMap = {
+                                            'Method Overloading': {
+                                                'Polymorphism Type': 'Compile-time (Static)',
+                                                'Purpose': 'Increase readability',
+                                                'Location': 'Within a single class',
+                                                'Inheritance': 'Not required',
+                                                'Method Signature': 'Must be different',
+                                                'Binding': 'Static Binding'
+                                            },
+                                            'Method Overriding': {
+                                                'Polymorphism Type': 'Run-time (Dynamic)',
+                                                'Purpose': 'Provide specific implementation',
+                                                'Location': 'In two classes (parent/child)',
+                                                'Inheritance': 'Required',
+                                                'Method Signature': 'Must be the same',
+                                                'Binding': 'Dynamic Binding'
+                                            }
+                                        };
+                                        return `${type}: ${valueMap[type][feature]}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { display: false },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            const listCanvas = document.getElementById('listChart');
+            if(listCanvas) {
+                new Chart(listCanvas, {
+                     type: 'bar',
+                    data: {
+                        labels: ['Get by Index', 'Add/Remove (Middle)'],
+                        datasets: [{
+                            label: 'ArrayList (fast)',
+                            data: [5, 1],
+                            backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                        }, {
+                            label: 'LinkedList (fast)',
+                            data: [1, 5],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'List Performance: ArrayList vs LinkedList', font: { size: 16 } },
+                             tooltip: { enabled: false }
+                        },
+                        scales: { y: { beginAtZero: true, ticks: { callback: (v) => v === 5 ? 'Faster' : 'Slower' } } }
+                    }
+                });
+            }
+
+            const setCanvas = document.getElementById('setChart');
+            if(setCanvas) {
+                new Chart(setCanvas, {
+                     type: 'bar',
+                    data: {
+                        labels: ['Add/Remove/Contains Speed', 'Maintains Order'],
+                        datasets: [{
+                            label: 'HashSet',
+                            data: [5, 0],
+                            backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                        }, {
+                            label: 'TreeSet',
+                            data: [3, 2],
+                             backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Set Characteristics: HashSet vs TreeSet', font: { size: 16 } },
+                            tooltip: { enabled: false }
+                        },
+                         scales: { y: { beginAtZero: true, ticks: { callback: (v) => { if(v==5) return 'Fastest'; if(v==3) return 'Fast'; if(v==2) return 'Sorted'; if(v==0) return 'No Order'; return ''; } } } }
+                    }
+                });
+            }
+        }
+        
+        function handleHashChange() {
+            const hash = window.location.hash.substring(1);
+            if (content[hash]) {
+                activeDay = hash;
+            } else {
+                activeDay = 'day-1';
+            }
+            render();
+        }
+
+        function render() {
+            renderNav();
+            renderContent();
+        }
+     // here you go 
+        mobileMenuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !mobileMenuButton.contains(e.target) && sidebar.classList.contains('open')) {
+                 sidebar.classList.remove('open');
+            }
+        });
+        
+        window.addEventListener('hashchange', handleHashChange);
+        window.addEventListener('DOMContentLoaded', handleHashChange);
+
+    </script>
+</body>
+</html>
